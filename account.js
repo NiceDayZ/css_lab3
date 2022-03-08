@@ -3,7 +3,7 @@ const { NotEnoughFundsException } = require("./not-enough-funds.exception");
  class Account
   {
     constructor(amount=0){
-        this.balance = 0
+        this.balance = amount
     }
 
     Deposit(amount)
