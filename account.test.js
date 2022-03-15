@@ -1,18 +1,28 @@
 const { Account } = require("./account");
+const { CurrencyService } = require("./currency.service");
 const { NotEnoughFundsException } = require("./not-enough-funds.exception");
+
+jest.mock('./currency.service.js')
 
 describe("Testing account class", () => {
     test("it should transfer from one account to another", () =>{
-        source = new Account();
-        source.Deposit(200);
+        source = new Account(0, 'GBP');
+        source.Deposit(100);
 
-        destination = new Account();
-        destination.Deposit(150);
+        destination = new Account(0, 'CAD');
+
+        const mockCurrencyService = CurrencyService.mock.instances[0];
+        const mockGetConvertionRate = mockCurrencyService.GetConversionRate;
+
+        mockGetConvertionRate.mockReturnValueOnce(2.2);
 
         source.TransferFunds(destination, 100);
 
-        expect(source.balance).toEqual(100);
-        expect(destination.balance).toEqual(250);
+        expect(source.balance).toEqual(0);
+        expect(destination.balance).toEqual(220);
+
+        expect(mockGetConvertionRate).toHaveBeenCalledTimes(1);
+        expect(mockGetConvertionRate).toHaveBeenCalledWith('GBP', 'CAD');
         
     })
 
